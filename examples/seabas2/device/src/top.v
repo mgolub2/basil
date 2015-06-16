@@ -119,6 +119,8 @@ clock clock_maker (
 
     localparam SEQ_GEN_BASEADDR = 32'h1000;                      //0x1000
     localparam SEQ_GEN_HIGHADDR = SEQ_GEN_BASEADDR + 16 + 32'h1fff;   //0x300f
+	 localparam SEQ_GEN_BASEADDR_TEST = 32'h4000;                      //0x4000
+    localparam SEQ_GEN_HIGHADDR_TEST = SEQ_GEN_BASEADDR + 16 + 32'h1fff;   //0x600f
     
 	 wire [3:0] GPIO_DIP_TEST;
 	 assign GPIO_DIP_TEST = GPIO_DIP;
@@ -143,6 +145,8 @@ clock clock_maker (
     );
      
     wire [7:0] SEQ_OUT;
+	 wire [7:0] SEQ_OUT_TEST;
+	 
     seq_gen 
     #( 
         .BASEADDR(SEQ_GEN_BASEADDR), 
@@ -162,6 +166,27 @@ clock clock_maker (
         .SEQ_CLK(SPI_CLK),
         .SEQ_OUT(SEQ_OUT)
     );
+	 
+	 seq_gen 
+    #( 
+        .BASEADDR(SEQ_GEN_BASEADDR_TEST), 
+        .HIGHADDR(SEQ_GEN_HIGHADDR_TEST),
+        .ABUSWIDTH(32),
+        .MEM_BYTES(8*1024), 
+        .OUT_BITS(8) 
+    ) i_seq_gen_TEST
+    (
+        .BUS_CLK(BUS_CLK),
+        .BUS_RST(BUS_RST),
+        .BUS_ADD(BUS_ADD),
+        .BUS_DATA(BUS_DATA),
+        .BUS_RD(BUS_RD),
+        .BUS_WR(BUS_WR),
+    
+        .SEQ_CLK(SPI_CLK),
+        .SEQ_OUT(SEQ_OUT_TEST)
+    );
+	 
     wire SR_IN, GLOBAL_SR_EN, GLOBAL_CTR_LD, GLOBAL_DAC_LD, PIXEL_SR_EN, INJECT;
     wire GLOBAL_SR_CLK, PIXEL_SR_CLK;
     assign SR_IN                = SEQ_OUT[0];
